@@ -31,9 +31,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: terraform init -backend=false
-              disableAutoCwd: true
-              workingDirectory: $(TF_WORKING_DIR)
+              inlineScript: cd $(TF_WORKING_DIR) && terraform init -backend=false
 
           - script: terraform validate
             displayName: "Terraform Validate"
@@ -64,9 +62,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: terraform init
-              disableAutoCwd: true
-              workingDirectory: $(TF_WORKING_DIR)
+              inlineScript: cd $(TF_WORKING_DIR) && terraform init
 
           - task: AWSShellScript@1
             displayName: "Terraform Plan"
@@ -74,9 +70,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: terraform plan -out=tfplan -var="environment=dev"
-              disableAutoCwd: true
-              workingDirectory: $(TF_WORKING_DIR)
+              inlineScript: cd $(TF_WORKING_DIR) && terraform plan -out=tfplan -var="environment=dev"
 
           - publish: $(TF_WORKING_DIR)/tfplan
             artifact: terraform-plan
@@ -111,9 +105,7 @@ stages:
                     awsCredentials: "aws-s3-test"
                     regionName: $(AWS_DEFAULT_REGION)
                     scriptType: inline
-                    inlineScript: terraform init
-                    disableAutoCwd: true
-                    workingDirectory: $(TF_WORKING_DIR)
+                    inlineScript: cd $(TF_WORKING_DIR) && terraform init
 
                 - task: AWSShellScript@1
                   displayName: "Terraform Apply"
@@ -121,6 +113,4 @@ stages:
                     awsCredentials: "aws-s3-test"
                     regionName: $(AWS_DEFAULT_REGION)
                     scriptType: inline
-                    inlineScript: terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"
-                    disableAutoCwd: true
-                    workingDirectory: $(TF_WORKING_DIR)
+                    inlineScript: cd $(TF_WORKING_DIR) && terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"
