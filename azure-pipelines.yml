@@ -25,13 +25,15 @@ stages:
             inputs:
               terraformVersion: $(TF_VERSION)
 
-          - script: terraform init -backend=false
+          - task: AWSShellScript@1
             displayName: "Terraform Init (no backend)"
-            workingDirectory: $(TF_WORKING_DIR)
-            env:
-              AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-              AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+            inputs:
+              awsCredentials: "aws-s3-test"
+              regionName: $(AWS_DEFAULT_REGION)
+              scriptType: inline
+              inlineScript: terraform init -backend=false
+              disableAutoCwd: true
+              workingDirectory: $(TF_WORKING_DIR)
 
           - script: terraform validate
             displayName: "Terraform Validate"
@@ -56,21 +58,25 @@ stages:
             inputs:
               terraformVersion: $(TF_VERSION)
 
-          - script: terraform init
+          - task: AWSShellScript@1
             displayName: "Terraform Init"
-            workingDirectory: $(TF_WORKING_DIR)
-            env:
-              AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-              AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+            inputs:
+              awsCredentials: "aws-s3-test"
+              regionName: $(AWS_DEFAULT_REGION)
+              scriptType: inline
+              inlineScript: terraform init
+              disableAutoCwd: true
+              workingDirectory: $(TF_WORKING_DIR)
 
-          - script: terraform plan -out=tfplan -var="environment=dev"
+          - task: AWSShellScript@1
             displayName: "Terraform Plan"
-            workingDirectory: $(TF_WORKING_DIR)
-            env:
-              AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-              AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-              AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+            inputs:
+              awsCredentials: "aws-s3-test"
+              regionName: $(AWS_DEFAULT_REGION)
+              scriptType: inline
+              inlineScript: terraform plan -out=tfplan -var="environment=dev"
+              disableAutoCwd: true
+              workingDirectory: $(TF_WORKING_DIR)
 
           - publish: $(TF_WORKING_DIR)/tfplan
             artifact: terraform-plan
@@ -99,18 +105,22 @@ stages:
                   inputs:
                     terraformVersion: $(TF_VERSION)
 
-                - script: terraform init
+                - task: AWSShellScript@1
                   displayName: "Terraform Init"
-                  workingDirectory: $(TF_WORKING_DIR)
-                  env:
-                    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-                    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-                    AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+                  inputs:
+                    awsCredentials: "aws-s3-test"
+                    regionName: $(AWS_DEFAULT_REGION)
+                    scriptType: inline
+                    inlineScript: terraform init
+                    disableAutoCwd: true
+                    workingDirectory: $(TF_WORKING_DIR)
 
-                - script: 'terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"'
+                - task: AWSShellScript@1
                   displayName: "Terraform Apply"
-                  workingDirectory: $(TF_WORKING_DIR)
-                  env:
-                    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-                    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-                    AWS_DEFAULT_REGION: $(AWS_DEFAULT_REGION)
+                  inputs:
+                    awsCredentials: "aws-s3-test"
+                    regionName: $(AWS_DEFAULT_REGION)
+                    scriptType: inline
+                    inlineScript: terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"
+                    disableAutoCwd: true
+                    workingDirectory: $(TF_WORKING_DIR)
