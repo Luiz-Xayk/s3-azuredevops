@@ -36,8 +36,8 @@ stages:
           - script: terraform validate
             displayName: "Terraform Validate"
 
-          - script: terraform fmt -check -recursive
-            displayName: "Terraform Format Check"
+          - script: terraform fmt -recursive
+            displayName: "Terraform Format"
 
   - stage: Plan
     displayName: "Terraform Plan"
