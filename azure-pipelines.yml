@@ -4,7 +4,7 @@ trigger:
       - main
 
 pool:
-  name: Default
+  vmImage: ubuntu-latest
 
 variables:
   TF_VERSION: "1.7.5"
@@ -31,7 +31,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: cd $(TF_WORKING_DIR) && terraform init -backend=false
+              inlineScript: cd $SYSTEM_DEFAULTWORKINGDIRECTORY/terraform && terraform init -backend=false
 
           - script: terraform validate
             displayName: "Terraform Validate"
@@ -62,7 +62,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: cd $(TF_WORKING_DIR) && terraform init
+              inlineScript: cd $SYSTEM_DEFAULTWORKINGDIRECTORY/terraform && terraform init
 
           - task: AWSShellScript@1
             displayName: "Terraform Plan"
@@ -70,7 +70,7 @@ stages:
               awsCredentials: "aws-s3-test"
               regionName: $(AWS_DEFAULT_REGION)
               scriptType: inline
-              inlineScript: cd $(TF_WORKING_DIR) && terraform plan -out=tfplan -var="environment=dev"
+              inlineScript: cd $SYSTEM_DEFAULTWORKINGDIRECTORY/terraform && terraform plan -out=tfplan -var="environment=dev"
 
           - publish: $(TF_WORKING_DIR)/tfplan
             artifact: terraform-plan
@@ -105,7 +105,7 @@ stages:
                     awsCredentials: "aws-s3-test"
                     regionName: $(AWS_DEFAULT_REGION)
                     scriptType: inline
-                    inlineScript: cd $(TF_WORKING_DIR) && terraform init
+                    inlineScript: cd $SYSTEM_DEFAULTWORKINGDIRECTORY/terraform && terraform init
 
                 - task: AWSShellScript@1
                   displayName: "Terraform Apply"
@@ -113,4 +113,4 @@ stages:
                     awsCredentials: "aws-s3-test"
                     regionName: $(AWS_DEFAULT_REGION)
                     scriptType: inline
-                    inlineScript: cd $(TF_WORKING_DIR) && terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"
+                    inlineScript: cd $SYSTEM_DEFAULTWORKINGDIRECTORY/terraform && terraform apply "$(Pipeline.Workspace)/terraform-plan/tfplan"
